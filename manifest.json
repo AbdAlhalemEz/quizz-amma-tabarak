@@ -1,7 +1,7 @@
 {
   "name": "كويز الآيات - جزء عم وتبارك",
   "short_name": "كويز الآيات",
-  "start_url": "index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#d9f1ff",
   "theme_color": "#2196F3",
