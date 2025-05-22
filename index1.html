@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>كويز الآيات - جزء عمّ وتبارك</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #eef2f3, #d9f1ff);
+      text-align: center;
+      padding: 20px;
+      direction: rtl;
+    }
+    h1 { font-size: 30px; color: #333; }
+    .quiz-box {
+      background-color: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: inline-block;
+      max-width: 600px;
+      margin-top: 20px;
+    }
+    .ayah-text {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .options button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      background-color: #f0f0f0;
+      cursor: pointer;
+    }
+    .options button:hover {
+      background-color: #d0e6ff;
+    }
+    .number-input {
+      margin: 15px;
+    }
+    input[type="number"] {
+      padding: 5px;
+      font-size: 18px;
+      width: 60px;
+    }
+    .check-btn {
+      background-color: #2196F3;
+      color: white;
+      font-size: 18px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .score-board {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+    #result {
+      font-size: 20px;
+      margin-top: 15px;
+      height: 24px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>كويز الآيات - جزء عمّ وتبارك</h1>
+  <div class="quiz-box">
+    <div class="ayah-text" id="ayah-text"></div>
+    <div class="options" id="choices"></div>
+    <div class="number-input">
+      رقم الآية: <input type="number" id="ayah-number">
+    </div>
+    <button class="check-btn" onclick="checkAnswer()">تحقق</button>
+    <div id="result"></div>
+    <div class="score-board">
+      السؤال <span id="current-question">1</span> من 30 — النقاط: <span id="score">0</span>
+    </div>
+  </div>
+
+  <script>
+    const JUZ_30 = [78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114];
+    const JUZ_29 = [67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77];
+    const allowedChapters = [...JUZ_29, ...JUZ_30];
+
+    const surahNames = [
+      '', 'الفاتحة', 'البقرة', 'آل عمران', 'النساء', 'المائدة', 'الأنعام', 'الأعراف', 'الأنفال',
+      'التوبة', 'يونس', 'هود', 'يوسف', 'الرعد', 'إبراهيم', 'الحجر', 'النحل', 'الإسراء',
+      'الكهف', 'مريم', 'طه', 'الأنبياء', 'الحج', 'المؤمنون', 'النور', 'الفرقان', 'الشعراء',
+      'النمل', 'القصص', 'العنكبوت', 'الروم', 'لقمان', 'السجدة', 'الأحزاب', 'سبأ', 'فاطر',
+      'يس', 'الصافات', 'ص', 'الزمر', 'غافر', 'فصلت', 'الشورى', 'الزخرف', 'الدخان',
+      'الجاثية', 'الأحقاف', 'محمد', 'الفتح', 'الحجرات', 'ق', 'الذاريات', 'الطور', 'النجم',
+      'القمر', 'الرحمن', 'الواقعة', 'الحديد', 'المجادلة', 'الحشر', 'الممتحنة', 'الصف',
+      'الجمعة', 'المنافقون', 'التغابن', 'الطلاق', 'التحريم', 'الملك', 'القلم', 'الحاقة',
+      'المعارج', 'نوح', 'الجن', 'المزمل', 'المدثر', 'القيامة', 'الإنسان', 'المرسلات',
+      'النبأ', 'النازعات', 'عبس', 'التكوير', 'الانفطار', 'المطففين', 'الانشقاق',
+      'البروج', 'الطارق', 'الأعلى', 'الغاشية', 'الفجر', 'البلد', 'الشمس', 'الليل',
+      'الضحى', 'الشرح', 'التين', 'العلق', 'القدر', 'البينة', 'الزلزلة', 'العاديات',
+      'القارعة', 'التكاثر', 'العصر', 'الهمزة', 'الفيل', 'قريش', 'الماعون', 'الكوثر',
+      'الكافرون', 'النصر', 'المسد', 'الإخلاص', 'الفلق', 'الناس']
+
+    let quranData, questions = [], current = 0, score = 0, selectedSurah = null;
+    let correctChapter, correctVerse;
+
+    fetch('data/quran.json')
+      .then(res => res.json())
+      .then(data => {
+        quranData = Object.fromEntries(
+          Object.entries(data).filter(([chapter]) => allowedChapters.includes(Number(chapter)))
+        );
+        prepareQuestions();
+        showQuestion();
+      });
+
+    function prepareQuestions() {
+      const allVerses = [];
+      for (const chapter in quranData) {
+        for (const verse of quranData[chapter]) {
+          allVerses.push(verse);
+        }
+      }
+      const shuffled = allVerses.sort(() => Math.random() - 0.5);
+      questions = shuffled.slice(0, 30);
+    }
+
+    function showQuestion() {
+      if (current >= 30) {
+        document.querySelector('.quiz-box').innerHTML = `<h2>انتهى الاختبار! نتيجتك: ${score} من 30 ✅</h2>`;
+        return;
+      }
+
+      const verseObj = questions[current];
+      correctChapter = parseInt(verseObj.chapter);
+      correctVerse = parseInt(verseObj.verse);
+
+      document.getElementById('ayah-text').textContent = verseObj.text;
+      document.getElementById('current-question').textContent = current + 1;
+      document.getElementById('score').textContent = score;
+      document.getElementById('ayah-number').value = '';
+      document.getElementById('result').textContent = '';
+
+      const choices = new Set([correctChapter]);
+      while (choices.size < 6) {
+        const rand = allowedChapters[Math.floor(Math.random() * allowedChapters.length)];
+        choices.add(rand);
+      }
+      const shuffled = [...choices].sort(() => Math.random() - 0.5);
+      document.getElementById('choices').innerHTML = shuffled.map(num =>
+        `<button onclick="selectSurah(${num})" id="btn${num}">${surahNames[num]}</button>`
+      ).join('');
+      selectedSurah = null;
+    }
+
+    function selectSurah(num) {
+      selectedSurah = num;
+      document.querySelectorAll('#choices button').forEach(btn => btn.style.backgroundColor = '');
+      document.getElementById(`btn${num}`).style.backgroundColor = '#a0d8ef';
+    }
+
+    function checkAnswer() {
+      const inputNumber = parseInt(document.getElementById('ayah-number').value);
+      const isCorrect = selectedSurah === correctChapter && inputNumber === correctVerse;
+      const resultEl = document.getElementById('result');
+
+      if (isCorrect) {
+        resultEl.style.color = 'green';
+        resultEl.textContent = '✅ صحيح!';
+        score++;
+      } else {
+        const correctSurah = surahNames[correctChapter];
+        resultEl.style.color = 'red';
+        resultEl.textContent = `❌ خطأ! السورة: ${correctSurah}، رقم الآية: ${correctVerse}`;
+      }
+
+      setTimeout(() => {
+        current++;
+        showQuestion();
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
