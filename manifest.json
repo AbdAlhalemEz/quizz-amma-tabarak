@@ -1,8 +1,11 @@
 {
   "name": "كويز الآيات - جزء عم وتبارك",
   "short_name": "كويز الآيات",
+  "id": "/",
   "start_url": "./index.html",
   "display": "standalone",
+  "orientation": "portrait",
+  "description": "تطبيق كويز الآيات لتعلم سور جزء عم وتبارك بطريقة ممتعة وتفاعلية للأطفال",
   "background_color": "#d9f1ff",
   "theme_color": "#2196F3",
   "icons": [
