@@ -20,12 +20,44 @@
       display: inline-block;
       max-width: 600px;
       margin-top: 20px;
+      position: relative;
+      overflow: hidden;
     }
     .ayah-text {
       font-size: 24px;
       margin-bottom: 20px;
     }
     .options button {
+  background-color: #f0f0f0;
+  border: 2px solid #ccc;
+  color: #333;
+  font-weight: bold;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+  cursor: pointer;
+  margin: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 10px;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  display: inline-block;
+}
+      background-color: #f0f0f0;
+      background-image: linear-gradient(to bottom, #ffffff, #e0e0e0);
+      border: 2px solid #ccc;
+      color: #333;
+      font-weight: bold;
+      box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+      cursor: pointer;
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 10px;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+      background-image: linear-gradient(to right, #e0f7fa, #f8f9fa);
+      border: 1px solid #bbb;
+      transition: all 0.3s ease;
+    }
       margin: 5px;
       padding: 10px 20px;
       font-size: 16px;
@@ -35,6 +67,8 @@
       cursor: pointer;
     }
     .options button:hover {
+      background-color: #d0f0ff;
+      transform: scale(1.05);
       background-color: #d0e6ff;
     }
     .number-input {
@@ -55,30 +89,142 @@
       cursor: pointer;
     }
     .score-board {
-      margin-top: 20px;
+      margin-bottom: 15px;
       font-size: 20px;
+      background-color: #e0f7fa;
+      border: 2px solid #26c6da;
+      padding: 10px;
+      border-radius: 12px;
+      display: inline-block;
     }
     #result {
       font-size: 20px;
-      margin-top: 15px;
-      height: 24px;
+      margin: 15px auto;
+      padding: 15px;
       font-weight: bold;
+      background-color: #fefefe;
+      border-radius: 12px;
+      max-width: 500px;
+      line-height: 2;
+      border: 2px solid #ddd;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      animation: fadeIn 0.5s ease;
     }
-  </style>
+    .shake {
+      animation: shake 0.4s;
+    }
+    @keyframes shake {
+      0% { transform: translate(0); }
+      25% { transform: translate(-5px); }
+      50% { transform: translate(5px); }
+      75% { transform: translate(-5px); }
+      100% { transform: translate(0); }
+    }
+    .celebrate {
+      animation: pop 0.5s ease-out;
+    }
+    @keyframes pop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); color: #28a745; }
+      100% { transform: scale(1); }
+    }
+    .stars {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 10;
+    }
+    .star {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: gold;
+      border-radius: 50%;
+      animation: star-fall 1s ease-out forwards;
+    }
+    @keyframes star-fall {
+      0% { transform: translateY(-50px); opacity: 1; }
+      100% { transform: translateY(200px); opacity: 0; }
+    }
+  @keyframes flashGreen {
+      0% { background-color: #a5d6a7; }
+      50% { background-color: #81c784; }
+      100% { background-color: #a5d6a7; }
+    }
+  @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+.selected-btn {
+      background-color: #0288d1 !important;
+      color: white;
+      border: 2px solid #01579b;
+      transform: scale(1.05);
+    }
+.selected-btn {
+  background-color: #ffeb3b !important;
+  color: black;
+  border: 2px solid #fbc02d;
+  transform: scale(1.05);
+}
+.correct-btn {
+  background-color: #a5d6a7 !important;
+  color: black;
+  border: 2px solid #388e3c;
+}
+.wrong-btn {
+  background-color: #ef9a9a !important;
+  color: black;
+  border: 2px solid #c62828;
+}
+.button-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+</style>
 </head>
-<body>
+
+<style>
+  .progress-bar {
+    height: 15px;
+    background-color: #e0f2f1;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 100%;
+    margin: 10px 0;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background-color: #26a69a;
+    width: 0%;
+    transition: width 0.5s ease-in-out;
+  }
+</style>
+$1
   <h1>كويز الآيات - جزء عمّ وتبارك</h1>
-  <div class="quiz-box">
-    <div class="ayah-text" id="ayah-text"></div>
+  <div class="quiz-box" id="quiz-box">
+    <div class="progress-bar"><div class="progress-bar-fill" id="progress-bar-fill"></div></div>
+    <div class="score-board" style="margin-bottom: 25px; margin-top: -10px;">
+      السؤال <span id="current-question">1</span> من 30 — النقاط: <span id="score">0</span>
+    </div>
+    
+        <div class="ayah-text" id="ayah-text"></div>
+        
     <div class="options" id="choices"></div>
     <div class="number-input">
       رقم الآية: <input type="number" id="ayah-number">
     </div>
     <button class="check-btn" onclick="checkAnswer()">تحقق</button>
     <div id="result"></div>
-    <div class="score-board">
-      السؤال <span id="current-question">1</span> من 30 — النقاط: <span id="score">0</span>
-    </div>
+        
+    <div class="stars" id="stars"></div>
   </div>
 
   <script>
@@ -87,20 +233,21 @@
     const allowedChapters = [...JUZ_29, ...JUZ_30];
 
     const surahNames = [
-      '', 'الفاتحة', 'البقرة', 'آل عمران', 'النساء', 'المائدة', 'الأنعام', 'الأعراف', 'الأنفال',
-      'التوبة', 'يونس', 'هود', 'يوسف', 'الرعد', 'إبراهيم', 'الحجر', 'النحل', 'الإسراء',
-      'الكهف', 'مريم', 'طه', 'الأنبياء', 'الحج', 'المؤمنون', 'النور', 'الفرقان', 'الشعراء',
-      'النمل', 'القصص', 'العنكبوت', 'الروم', 'لقمان', 'السجدة', 'الأحزاب', 'سبأ', 'فاطر',
-      'يس', 'الصافات', 'ص', 'الزمر', 'غافر', 'فصلت', 'الشورى', 'الزخرف', 'الدخان',
-      'الجاثية', 'الأحقاف', 'محمد', 'الفتح', 'الحجرات', 'ق', 'الذاريات', 'الطور', 'النجم',
-      'القمر', 'الرحمن', 'الواقعة', 'الحديد', 'المجادلة', 'الحشر', 'الممتحنة', 'الصف',
-      'الجمعة', 'المنافقون', 'التغابن', 'الطلاق', 'التحريم', 'الملك', 'القلم', 'الحاقة',
-      'المعارج', 'نوح', 'الجن', 'المزمل', 'المدثر', 'القيامة', 'الإنسان', 'المرسلات',
-      'النبأ', 'النازعات', 'عبس', 'التكوير', 'الانفطار', 'المطففين', 'الانشقاق',
-      'البروج', 'الطارق', 'الأعلى', 'الغاشية', 'الفجر', 'البلد', 'الشمس', 'الليل',
-      'الضحى', 'الشرح', 'التين', 'العلق', 'القدر', 'البينة', 'الزلزلة', 'العاديات',
-      'القارعة', 'التكاثر', 'العصر', 'الهمزة', 'الفيل', 'قريش', 'الماعون', 'الكوثر',
-      'الكافرون', 'النصر', 'المسد', 'الإخلاص', 'الفلق', 'الناس']
+      "", "الفاتحة", "البقرة", "آل عمران", "النساء", "المائدة", "الأنعام", "الأعراف", "الأنفال",
+      "التوبة", "يونس", "هود", "يوسف", "الرعد", "إبراهيم", "الحجر", "النحل", "الإسراء",
+      "الكهف", "مريم", "طه", "الأنبياء", "الحج", "المؤمنون", "النور", "الفرقان", "الشعراء",
+      "النمل", "القصص", "العنكبوت", "الروم", "لقمان", "السجدة", "الأحزاب", "سبأ", "فاطر",
+      "يس", "الصافات", "ص", "الزمر", "غافر", "فصلت", "الشورى", "الزخرف", "الدخان", "الجاثية",
+      "الأحقاف", "محمد", "الفتح", "الحجرات", "ق", "الذاريات", "الطور", "النجم", "القمر",
+      "الرحمن", "الواقعة", "الحديد", "المجادلة", "الحشر", "الممتحنة", "الصف", "الجمعة",
+      "المنافقون", "التغابن", "الطلاق", "التحريم", "الملك", "القلم", "الحاقة", "المعارج",
+      "نوح", "الجن", "المزمل", "المدثر", "القيامة", "الإنسان", "المرسلات", "النبأ", "النازعات",
+      "عبس", "التكوير", "الانفطار", "المطففين", "الانشقاق", "البروج", "الطارق", "الأعلى",
+      "الغاشية", "الفجر", "البلد", "الشمس", "الليل", "الضحى", "الشرح", "التين", "العلق",
+      "القدر", "البينة", "الزلزلة", "العاديات", "القارعة", "التكاثر", "العصر", "الهمزة",
+      "الفيل", "قريش", "الماعون", "الكوثر", "الكافرون", "النصر", "المسد", "الإخلاص",
+      "الفلق", "الناس"
+    ];
 
     let quranData, questions = [], current = 0, score = 0, selectedSurah = null;
     let correctChapter, correctVerse;
@@ -127,15 +274,15 @@
     }
 
     function showQuestion() {
+      const progress = ((current) / 30) * 100;
+      document.getElementById('progress-bar-fill').style.width = `${progress}%`;
       if (current >= 30) {
-        document.querySelector('.quiz-box').innerHTML = `<h2>انتهى الاختبار! نتيجتك: ${score} من 30 ✅</h2>`;
+        document.querySelector('.quiz-box').innerHTML = `<h2>انتهى الاختبار! نتيجتك: ${score} من 30 ✅</h2><br><button onclick="location.reload()">إعادة المحاولة</button>`;
         return;
       }
-
       const verseObj = questions[current];
       correctChapter = parseInt(verseObj.chapter);
       correctVerse = parseInt(verseObj.verse);
-
       document.getElementById('ayah-text').textContent = verseObj.text;
       document.getElementById('current-question').textContent = current + 1;
       document.getElementById('score').textContent = score;
@@ -148,34 +295,72 @@
         choices.add(rand);
       }
       const shuffled = [...choices].sort(() => Math.random() - 0.5);
-      document.getElementById('choices').innerHTML = shuffled.map(num =>
+      document.getElementById('choices').innerHTML = `<div class="button-wrapper">` +
+      shuffled.map(num =>
         `<button onclick="selectSurah(${num})" id="btn${num}">${surahNames[num]}</button>`
-      ).join('');
+      ).join('') + '</div>';
       selectedSurah = null;
     }
 
     function selectSurah(num) {
       selectedSurah = num;
-      document.querySelectorAll('#choices button').forEach(btn => btn.style.backgroundColor = '');
-      document.getElementById(`btn${num}`).style.backgroundColor = '#a0d8ef';
+      document.querySelectorAll('#choices button').forEach(btn => {
+  btn.classList.remove('selected-btn', 'correct-btn', 'wrong-btn');
+});
+      
+      const selectedBtn = document.getElementById(`btn${num}`);
+      selectedBtn.classList.add('selected-btn');
+      // no inline style needed
+    }
+
+    function dropStars() {
+      const starsContainer = document.getElementById('stars');
+      for (let i = 0; i < 10; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = Math.random() * 100 + '%';
+        starsContainer.appendChild(star);
+        setTimeout(() => star.remove(), 1000);
+      }
     }
 
     function checkAnswer() {
-      const inputNumber = parseInt(document.getElementById('ayah-number').value);
-      const isCorrect = selectedSurah === correctChapter && inputNumber === correctVerse;
-      const resultEl = document.getElementById('result');
+  const inputNumber = parseInt(document.getElementById('ayah-number').value);
+  const isCorrect = selectedSurah === correctChapter && inputNumber === correctVerse;
+  const resultEl = document.getElementById('result');
+  const box = document.getElementById('quiz-box');
+  resultEl.className = '';
+  box.classList.remove('shake');
 
-      if (isCorrect) {
-        resultEl.style.color = 'green';
-        resultEl.textContent = '✅ صحيح!';
-        score++;
-      } else {
-        const correctSurah = surahNames[correctChapter];
-        resultEl.style.color = 'red';
-        resultEl.textContent = `❌ خطأ! السورة: ${correctSurah}، رقم الآية: ${correctVerse}`;
-      }
+  // تلوين جميع الأزرار
+  document.querySelectorAll('#choices button').forEach(btn => {
+    btn.classList.remove('selected-btn');
+    const id = parseInt(btn.id.replace('btn', ''));
+    if (id === correctChapter) {
+      btn.classList.add('correct-btn');
+    } else {
+      btn.classList.add('wrong-btn');
+    }
+  });
 
-      setTimeout(() => {
+  if (isCorrect) {
+    const correctBtn = document.getElementById(`btn${correctChapter}`);
+    if (correctBtn) {
+      correctBtn.style.animation = 'flashGreen 0.6s ease-in-out';
+    }
+    resultEl.style.color = 'green';
+    resultEl.innerHTML = `✅ <strong>إجابة صحيحة!</strong><br><span style='color:#2e7d32;'>السورة: ${surahNames[correctChapter]}</span><br><span>رقم الآية: ${correctVerse}</span>`;
+    resultEl.classList.add('celebrate');
+    score++;
+    dropStars();
+  } else {
+    const correctSurah = surahNames[correctChapter];
+    resultEl.style.color = 'red';
+    resultEl.innerHTML = `❌ <strong style='color:#d32f2f;'>الإجابة غير صحيحة!</strong><br><span style='color:#2e7d32; font-weight:bold;'>السورة: ${correctSurah}</span><br><span style='color:#d32f2f; font-weight:bold;'>رقم الآية: ${correctVerse}</span>`;
+    box.classList.add('shake');
+  }
+
+  setTimeout(() => {
         current++;
         showQuestion();
       }, 2000);
