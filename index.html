@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2196F3">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(() => console.log("Service Worker Registered"));
+    }
+  </script>
   <meta charset="UTF-8">
   <title>كويز الآيات - جزء عمّ وتبارك</title>
   <style>
@@ -207,6 +215,7 @@
     transition: width 0.5s ease-in-out;
   }
 </style>
+
   <h1>كويز الآيات - جزء عمّ وتبارك</h1>
   <div class="quiz-box" id="quiz-box">
     <div class="progress-bar"><div class="progress-bar-fill" id="progress-bar-fill"></div></div>
